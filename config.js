@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────
 window.CONFIG = {
   // Tu nombre de usuario de GitHub (el que sale en github.com/TU-USUARIO)
-  OWNER: "HeFraFol",
+  OWNER: "hefrafol",
 
   // El repositorio donde se guardan los registros (los issues)
   REPO_DATOS: "WebPruebasDatos",
