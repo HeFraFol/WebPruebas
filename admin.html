@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Panel de administración</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main class="contenedor">
+
+    <!-- Pantalla de entrada -->
+    <section id="vista-login" hidden>
+      <div class="caja">
+        <h1>Panel de administración</h1>
+        <p class="meta">
+          Pega tu token de GitHub. Se guarda solo en este navegador y únicamente se envía a GitHub.
+          En la guía (paso 6) se explica cómo crearlo.
+        </p>
+        <form id="form-login">
+          <label class="campo-form">
+            <span class="campo-etiqueta">Token</span>
+            <input id="input-token" type="password" autocomplete="off" placeholder="github_pat_…">
+          </label>
+          <button class="boton" type="submit">Entrar</button>
+        </form>
+        <p id="mensaje-login" class="meta"></p>
+      </div>
+    </section>
+
+    <!-- Panel -->
+    <section id="vista-panel" hidden>
+      <header class="cabecera">
+        <div>
+          <h1>Panel de administración</h1>
+          <p class="meta">Conectado como <strong id="usuario"></strong> · <a href="index.html">ver la web</a></p>
+        </div>
+        <div class="herramientas-cabecera">
+          <button id="btn-actualizar" class="boton secundario" type="button">Actualizar</button>
+          <button id="btn-salir" class="boton secundario" type="button">Salir</button>
+        </div>
+      </header>
+
+      <nav class="pestanas">
+        <button class="pestana activa" data-pestana="pendientes" type="button">Pendientes<span class="cuenta">0</span></button>
+        <button class="pestana" data-pestana="aprobados" type="button">En la web<span class="cuenta">0</span></button>
+        <button class="pestana" data-pestana="rechazados" type="button">Rechazados<span class="cuenta">0</span></button>
+      </nav>
+
+      <p id="estado" class="estado"></p>
+      <section id="lista" class="rejilla"></section>
+    </section>
+
+    <div id="toast" class="toast" hidden></div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="comun.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

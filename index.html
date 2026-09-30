@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi web</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main class="contenedor">
+    <header class="cabecera">
+      <div>
+        <h1 id="titulo">Mi web</h1>
+        <p class="meta" id="contador"></p>
+      </div>
+      <a class="boton" id="btn-anadir" target="_blank" rel="noopener">+ Añadir registro</a>
+    </header>
+
+    <p class="aviso">
+      Para añadir un registro necesitas una cuenta gratuita de GitHub.
+      Aparecerá aquí en cuanto se revise.
+    </p>
+
+    <div class="herramientas">
+      <input id="buscador" class="buscador" type="search" placeholder="Buscar…" aria-label="Buscar">
+      <select id="filtro" aria-label="Filtrar"></select>
+      <button class="boton secundario" id="btn-recargar" type="button">Actualizar</button>
+    </div>
+
+    <p id="estado" class="estado">Cargando…</p>
+    <section id="rejilla" class="rejilla"></section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="comun.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
