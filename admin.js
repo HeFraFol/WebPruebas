@@ -9,6 +9,7 @@ let token = null;
 let issues = [];
 let pestana = "pendientes";
 let editando = null; // número del issue que se está editando
+let creando = false; // true mientras se muestra el formulario de nuevo registro
 
 // ── Token ────────────────────────────────────────────────────
 function leerToken() { try { return localStorage.getItem(CLAVE_TOKEN); } catch { return null; } }
@@ -111,13 +112,16 @@ function pintar() {
   }
 
   const lista = grupos[pestana];
-  $("estado").hidden = lista.length > 0;
+  $("estado").hidden = lista.length > 0 || creando;
   $("estado").textContent = {
     pendientes: "No hay nada pendiente de revisar.",
     aprobados: "Todavía no hay registros publicados en la web.",
     rechazados: "No hay registros rechazados.",
   }[pestana];
-  $("lista").replaceChildren(...lista.map(i => (i.number === editando ? formularioEdicion(i) : tarjeta(i))));
+  $("lista").replaceChildren(
+    ...(creando ? [formularioEdicion(null)] : []),
+    ...lista.map(i => (i.number === editando ? formularioEdicion(i) : tarjeta(i)))
+  );
 }
 
 function boton(texto, tipo, accion) {
@@ -166,8 +170,9 @@ function tarjeta(i) {
   );
 }
 
+// Si i es null, el formulario crea un registro nuevo (ya aprobado)
 function formularioEdicion(i) {
-  const d = parsearCuerpo(i.body);
+  const d = i ? parsearCuerpo(i.body) : {};
   const entradas = {};
 
   const campos = C.CAMPOS.map(c => {
@@ -180,7 +185,8 @@ function formularioEdicion(i) {
     } else {
       control = el("input", { type: "text" });
     }
-    control.value = d[c.clave] || "";
+    if (d[c.clave] || !c.opciones) control.value = d[c.clave] || "";
+    if (c.principal || (c === C.CAMPOS[0] && !C.CAMPOS.some(x => x.principal))) control.required = true;
     entradas[c.clave] = control;
     return el("label", { class: "campo-form" }, el("span", { class: "campo-etiqueta", text: c.label }), control);
   });
@@ -193,22 +199,35 @@ function formularioEdicion(i) {
       for (const c of C.CAMPOS) nuevos[c.clave] = entradas[c.clave].value;
       const guardar = form.querySelector("button[type=submit]");
       guardar.disabled = true;
+      const titulo = String(nuevos[principal.clave] || "").trim().slice(0, 200) || "Registro";
       try {
-        Object.assign(i, await gh(`/issues/${i.number}`, "PATCH", { body: construirCuerpo(nuevos) }));
-        editando = null;
+        if (i) {
+          Object.assign(i, await gh(`/issues/${i.number}`, "PATCH", { title: titulo, body: construirCuerpo(nuevos) }));
+          editando = null;
+          aviso("Cambios guardados.", "ok");
+        } else {
+          const nuevo = await gh("/issues", "POST", {
+            title: titulo,
+            body: construirCuerpo(nuevos),
+            labels: [ETIQUETA_APROBADO],
+          });
+          issues.unshift(nuevo);
+          creando = false;
+          pestana = "aprobados";
+          aviso("Registro creado: ya aparece en la web.", "ok");
+        }
         pintar();
-        aviso("Cambios guardados.", "ok");
       } catch (err) {
         aviso(err.message, "error");
         guardar.disabled = false;
       }
     },
   },
-    el("p", { class: "meta", text: `Editando #${i.number}` }),
+    el("p", { class: "meta", text: i ? `Editando #${i.number}` : "Nuevo registro (se publicará directamente)" }),
     campos,
     el("div", { class: "acciones" },
-      el("button", { class: "boton ok", type: "submit", text: "Guardar" }),
-      el("button", { class: "boton secundario", type: "button", text: "Cancelar", onclick: () => { editando = null; pintar(); } })
+      el("button", { class: "boton ok", type: "submit", text: i ? "Guardar" : "Crear" }),
+      el("button", { class: "boton secundario", type: "button", text: "Cancelar", onclick: () => { editando = null; creando = false; pintar(); } })
     )
   );
   return form;
@@ -278,6 +297,13 @@ $("btn-salir").addEventListener("click", () => {
   mostrarLogin("Has salido. El token se ha borrado de este navegador.", false);
 });
 $("btn-actualizar").addEventListener("click", cargar);
+$("btn-nuevo").addEventListener("click", () => {
+  creando = true;
+  editando = null;
+  pintar();
+  const primero = $("lista").querySelector("input, textarea, select");
+  if (primero) primero.focus();
+});
 document.querySelectorAll(".pestana").forEach(b =>
   b.addEventListener("click", () => { pestana = b.dataset.pestana; editando = null; pintar(); })
 );
