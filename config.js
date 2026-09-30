@@ -3,10 +3,10 @@
 // ─────────────────────────────────────────────────────────────
 window.CONFIG = {
   // Tu nombre de usuario de GitHub (el que sale en github.com/TU-USUARIO)
-  OWNER: "tu-usuario",
+  OWNER: "HeFraFol",
 
   // El repositorio donde se guardan los registros (los issues)
-  REPO_DATOS: "mi-web-datos",
+  REPO_DATOS: "WebPruebasDatos",
 
   // Nombre del archivo de la plantilla del formulario (en el repo de datos)
   PLANTILLA: "registro.yml",
